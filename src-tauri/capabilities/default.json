@@ -18,6 +18,9 @@
     "clipboard-manager:default",
     "clipboard-manager:allow-read-text",
     "window:allow-set-focus",
-    "tray:allow-new"
+    "tray:allow-new",
+    "sql:allow-load",
+    "sql:allow-execute",
+    "sql:allow-select"
   ]
 }

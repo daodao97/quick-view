@@ -1,7 +1,7 @@
 {
   "productName": "json-view",
   "version": "0.0.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.daodao.json-view",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",

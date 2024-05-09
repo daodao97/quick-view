@@ -1,7 +1,3 @@
-# Tauri + React + Typescript
+# json viewer
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+JSON 快速查看工具, 可以监控剪贴板内容, 如果复制的内容为 JSON 格式 则会自动弹出窗口并友好展示 JSON 内容.
