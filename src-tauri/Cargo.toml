@@ -22,6 +22,7 @@ tauri-plugin-store = "2.0.0-beta.6"
 tokio = "1.37.0"
 regex = "1.10.4"
 anyhow = "1.0.83"
+tauri-plugin-http = "2.0.0-beta.7"
 
 [dependencies.tauri-plugin-sql]
 features = ["sqlite"] # or "postgres", or "mysql"

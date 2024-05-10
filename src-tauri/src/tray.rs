@@ -7,7 +7,7 @@ use tauri::{
 
 fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
     let json = MenuItem::with_id(handle, "json", "Copyed Json", true, None::<&str>)?;
-    let sql = MenuItem::with_id(handle, "sql", "Copyed SQL", false, None::<&str>)?;
+    let sql = MenuItem::with_id(handle, "sql", "Copyed SQL", true, None::<&str>)?;
     let xml = MenuItem::with_id(handle, "xml", "Copyed XML", false, None::<&str>)?;
     let curl = MenuItem::with_id(handle, "curl", "Copyed Curl", false, None::<&str>)?;
     let clip = MenuItem::with_id(handle, "clip", "Copyed Text", false, None::<&str>)?;
@@ -24,8 +24,8 @@ fn handler(app: &AppHandle, event: MenuEvent) {
             let _ = panel.show();
             let _ = panel.set_focus();
         }
-        "clip" => {
-            let panel = app.get_webview_window("clip").unwrap();
+        "sql" => {
+            let panel = app.get_webview_window("sql").unwrap();
             let _ = panel.show();
             let _ = panel.set_focus();
         }

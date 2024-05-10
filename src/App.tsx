@@ -6,6 +6,7 @@ import {
 
 import Json from "./pages/json";
 import Clip from "./pages/clip";
+import SQL from "./pages/sql";
  
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Json />} />
                 <Route path="/json" element={<Json />} />
+                <Route path="/sql" element={<SQL />} />
                 <Route path="/clip" element={<Clip />} />
             </Routes>
         </Router>

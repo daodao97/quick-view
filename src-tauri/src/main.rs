@@ -17,15 +17,16 @@ fn main() {
         Migration {
             version: 1,
             description: "create_initial_tables",
-            sql: "CREATE TABLE history (id INTEGER PRIMARY KEY, content TEXT);",
+            sql: "CREATE TABLE history ( id INTEGER PRIMARY KEY, content TEXT, content_type TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP );",
             kind: MigrationKind::Up,
         }
     ];
 
     let mut app = tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
         .plugin(
             tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:mydatabase.db", migrations)
+                .add_migrations("sqlite:quick_view.db", migrations)
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::new().build())

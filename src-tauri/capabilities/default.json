@@ -3,7 +3,11 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": [
-    "json", "clip"
+    "json",
+    "clip",
+    "sql",
+    "curl",
+    "xml"
   ],
   "permissions": [
     "path:default",
@@ -21,6 +25,10 @@
     "tray:allow-new",
     "sql:allow-load",
     "sql:allow-execute",
-    "sql:allow-select"
+    "sql:allow-select",
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://*.*" }]
+    }
   ]
 }

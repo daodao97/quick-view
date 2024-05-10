@@ -1,6 +1,4 @@
-import { History } from "../pages/json/history";
-
-function Modal({ onClose, historyRecords, onClick }: { onClose: () => void, historyRecords: History[], onClick?: (record: History) => void }) {
+function Modal({ onClose, children }: { onClose: () => void, children?: React.ReactNode }) {
 
     // 处理点击外部关闭模态框的逻辑
     const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -15,14 +13,10 @@ function Modal({ onClose, historyRecords, onClick }: { onClose: () => void, hist
                 <button onClick={onClose} className="absolute top-3 right-3 text-gray-800 text-lg font-bold">
                     ×
                 </button>
-                <h2 className="font-bold text-lg mb-2">历史记录</h2>
-                <ul className="max-h-80 overflow-y-auto">
-                    {historyRecords.map((record, index) => (
-                        <li key={index} className="border-b last:border-b-0 py-2" onClick={() => onClick?.(record)}>
-                            {record.content}
-                        </li>
-                    ))}
-                </ul>
+                <h2 className="font-bold text-lg mb-2">History</h2>
+                <div className="max-h-80 overflow-y-auto">
+                    {children}
+                </div>
             </div>
         </div>
     );

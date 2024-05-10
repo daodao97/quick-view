@@ -9,6 +9,7 @@ import { addHistory, getHistory } from './history';
 import { History } from "./history";
 import { listen } from '@tauri-apps/api/event';
 import { isJsonText } from "./funcs";
+import HistoryTable from "./history_table";
 
 function App() {
   const [isJson, setIsJson] = useState(false);
@@ -18,7 +19,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [history, setHistory] = useState<History[]>([]);
 
-  const receivedJson = async (text : string) => {
+  const receivedJson = async (text: string) => {
     if (text === userCopy) return
     const data = await isJsonText(text);
     if (data) {
@@ -43,23 +44,23 @@ function App() {
   };
 
   async function loadHistory() {
-    const records= await getHistory();
+    const records = await getHistory();
     records && setHistory(records);
   }
 
   useEffect(() => {
     loadHistory();
 
-    async function listenError() {
+    async function listenGet() {
       await listen<string>('get_json', async (event) => {
         console.log(`Got json, payload: ${event.payload}`);
         await receivedJson(event.payload);
       });
     }
 
-    listenError();
+    listenGet();
 
-    async function  initClipText() {
+    async function initClipText() {
       const text = await readText();
       console.log(`Got text init, payload: ${text}`);
       if (text != content) {
@@ -90,10 +91,12 @@ function App() {
       <div className="flex items-center justify-between bg-gray-200 p-2 shadow-inner fixed inset-x-0 bottom-0 h-15">
         <input type="text" className="flex-grow mr-2 p-2" placeholder="type a[0].b.c to filter" value={path} onChange={(e) => setPath(e.target.value)} />
         <button onClick={toggleModal} className="p-2">
-          <img src={historySvg} className="h-5 w-5" alt="历史记录" />
+          <img src={historySvg} className="h-5 w-5" alt="history" />
         </button>
       </div>
-      {isModalOpen && <Modal onClose={toggleModal} historyRecords={history} onClick={onHistoryClick} />}
+      {isModalOpen && <Modal onClose={toggleModal}>
+        <HistoryTable historyRecords={history} onClick={onHistoryClick}></HistoryTable>
+      </Modal>}
     </div>
   );
 }

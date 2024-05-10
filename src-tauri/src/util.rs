@@ -50,14 +50,21 @@ pub async fn on_clipboard_change<R: Runtime, F>(app: tauri::AppHandle<R>, callba
 }
 
 pub fn is_json(input: &str) -> bool {
-    serde_json::from_str::<serde_json::Value>(input).is_ok()
+    let input = remove_comments(&input);
+    serde_json::from_str::<serde_json::Value>(&input).is_ok()
+}
+
+
+pub fn is_sql(query: &str) -> bool {
+    let re = Regex::new(r"(?i)\b(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|WITH)\b").unwrap();
+    re.is_match(query)
 }
 
 
 use regex::Regex;
 
 pub fn remove_comments(input: &str) -> String {
-    let result = input.to_string();
+    let result = input.trim().to_string();
 
     // Regex to find string literals and replace them temporarily
     let re_string = Regex::new(r#""[^"\\]*(\\.[^"\\]*)*""#).unwrap();

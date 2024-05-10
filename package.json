@@ -12,6 +12,7 @@
   "dependencies": {
     "@tauri-apps/api": ">=2.0.0-beta.0",
     "@tauri-apps/plugin-clipboard-manager": "^2.1.0-beta.1",
+    "@tauri-apps/plugin-http": "^2.0.0-beta.3",
     "@tauri-apps/plugin-shell": ">=2.0.0-beta.0",
     "@tauri-apps/plugin-sql": "^2.0.0-beta.3",
     "@tauri-apps/plugin-store": "^2.0.0-beta.3",
@@ -20,6 +21,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-json-view": "^1.21.3",
+    "react-monaco-editor": "^0.55.0",
     "react-router-dom": "^6.23.0"
   },
   "devDependencies": {
@@ -29,6 +31,7 @@
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
+    "monaco-editor-webpack-plugin": "^7.1.0",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.0.2",
     "vite": "^5.0.0"
