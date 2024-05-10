@@ -9,10 +9,47 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+use tauri::Runtime;
+use tauri_plugin_clipboard_manager::ClipboardExt;
+use std::{sync::{Arc, Mutex}, time::Duration};
+use tokio::time::sleep;
+
+async fn on_clipboard_change<R: Runtime, F>(app: tauri::AppHandle<R>, mut callback: F)
+where
+    F: FnMut(String) + Send + 'static,
+{
+    println!("on_clipboard_change start");
+    let last_content = Arc::new(Mutex::new(String::new()));
+    loop {
+    let current_content = match app.clipboard().read_text() {
+        Ok(content) => content,
+        Err(_) => String::new(),
+        
+    };
+    let mut last_content_lock = last_content.lock().unwrap();
+        if *last_content_lock != current_content {
+            callback(current_content.clone());
+            *last_content_lock = current_content;
+        }
+        drop(last_content_lock);
+
+        let _ = sleep(Duration::from_secs(1));
+    }
+
+   
+}
+
+fn is_json(input: &str) -> bool {
+    serde_json::from_str::<serde_json::Value>(input).is_ok()
+}
+
+// fn send_event_to_frontend<R: Runtime>(app: tauri::AppHandle<R>, event_name: &str, payload: &str) {
+// }
+
+
 fn main() {
 
     let migrations = vec![
-        // Define your migrations here
         Migration {
             version: 1,
             description: "create_initial_tables",
@@ -31,6 +68,20 @@ fn main() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![greet])
+        .setup(|app| {
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                println!("Starting on_clipboard_change");
+                on_clipboard_change(app_handle, |content| {
+                    println!("Received content: {}", content);
+
+                    println!("Is JSON: {}", is_json(&content));
+
+                    // send_event_to_frontend(app_handle, "clipboard_changed", &content);
+                }).await
+            });
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
