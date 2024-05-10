@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import onChange from "./clip_on_change";
 import { checkClipboardForJson } from "./json";
 import { getCurrent } from '@tauri-apps/api/window';
 import ReactJson from 'react-json-view'
@@ -10,7 +9,7 @@ import { get } from "lodash";
 import Modal from "./Modal";
 import { addHistory, getHistory } from './history';
 import { History } from "./history";
-
+import { listen } from '@tauri-apps/api/event';
 
 function App() {
   const [isJson, setIsJson] = useState(false);
@@ -20,7 +19,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [history, setHistory] = useState<History[]>([]);
 
-  onChange(async (text) => {
+  const receivedJson = async (text : string) => {
     if (text === userCopy) return
     const data = await checkClipboardForJson(text);
     if (data) {
@@ -30,7 +29,20 @@ function App() {
       await addHistory(text);
       setIsModalOpen(false);
     }
-  })
+  };
+
+ 
+  // onChange(async (text) => {
+  //   if (text === userCopy) return
+  //   const data = await checkClipboardForJson(text);
+  //   if (data) {
+  //     setContent(data);
+  //     setIsJson(true);
+  //     await getCurrent().setFocus();
+  //     await addHistory(text);
+  //     setIsModalOpen(false);
+  //   }
+  // })
 
   const enableClipboard = async () => {
     const text = await readText();
@@ -51,6 +63,17 @@ function App() {
 
   useEffect(() => {
     loadHistory();
+
+    async function listenError() {
+      await listen<string>('get_json', async (event) => {
+        console.log(`Got json, payload: ${event.payload}`);
+        await receivedJson(event.payload);
+      });
+    }
+
+    listenError();
+  
+
   }, []);
 
   const onHistoryClick = async (record: History) => {

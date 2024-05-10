@@ -1,6 +1,6 @@
 {
   "productName": "json-view",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "identifier": "com.daodao.json-view",
   "build": {
     "beforeDevCommand": "bun run dev",
@@ -9,13 +9,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [
-      {
-        "title": "json-view",
-        "width": 800,
-        "height": 600
-      }
-    ],
+    "withGlobalTauri": false,
     "security": {
       "csp": null
     }

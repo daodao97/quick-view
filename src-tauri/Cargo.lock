@@ -1838,8 +1838,10 @@ dependencies = [
 
 [[package]]
 name = "json-view"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
+ "anyhow",
+ "regex",
  "serde",
  "serde_json",
  "tauri",
