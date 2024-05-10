@@ -7,5 +7,3 @@ export async function checkClipboardForJson(text : string) {
     }
   }
   
-
-  

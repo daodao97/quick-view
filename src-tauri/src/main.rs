@@ -9,7 +9,7 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-use tauri::{menu::{Menu, MenuEvent, MenuItem}, AppHandle, Manager, Runtime, Wry, tray::{ClickType, TrayIconBuilder} };
+use tauri::{menu::{Menu, MenuEvent, MenuItem, Submenu}, tray::{ClickType, TrayIconBuilder}, AppHandle, Manager, Runtime, Wry };
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use std::{sync::{Arc, Mutex}, thread::spawn, time::Duration};
 use tokio::time::sleep;
@@ -89,11 +89,21 @@ pub fn json_window(app: &AppHandle) {
         .expect("Failed to create panel window");
 }
 
+pub fn clip_window(app: &AppHandle) {
+    tauri::WebviewWindowBuilder::new(app, "clip", tauri::WebviewUrl::App("/clip".into()))
+        .title("clip-view")
+        .inner_size(800.0, 600.0)
+        .visible(false)
+        .build()
+        .expect("Failed to create panel window");
+}
 
 use anyhow::Result;
 
 fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
-    let show = MenuItem::with_id(handle, "show", "Show", true, None::<&str>)?;
+    let json = MenuItem::with_id(handle, "json", "Copyed Json", true, None::<&str>)?;
+    let clip = MenuItem::with_id(handle, "clip", "Copyed Any", false, None::<&str>)?;
+    let show = Submenu::with_items(handle, "Show", true, &[&json, &clip])?;
     let exit = MenuItem::with_id(handle, "exit", "Exit", true, None::<&str>)?;
     Menu::with_items(handle, &[&show, &exit])
         .map_err(|_| anyhow::anyhow!("Failed to create menu"))
@@ -101,8 +111,13 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
 
 fn handler(app: &AppHandle, event: MenuEvent) {
     match event.id.as_ref() {
-        "show" => {
+        "json" => {
             let panel = app.get_webview_window("json").unwrap();
+            let _ = panel.show();
+            let _ = panel.set_focus();
+        }
+        "clip" => {
+            let panel = app.get_webview_window("clip").unwrap();
             let _ = panel.show();
             let _ = panel.set_focus();
         }
@@ -179,6 +194,13 @@ fn main() {
                     // send_event_to_frontend(app_handle, "clipboard_changed", &content);
                 }).await
             });
+
+
+            // clip
+
+            let app_handle = app.handle().clone();
+
+            clip_window(&app_handle);
 
             let menu = menu(app.handle())?;
             let _ = TrayIconBuilder::with_id("menu")

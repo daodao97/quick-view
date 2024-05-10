@@ -1,4 +1,4 @@
-import { History } from "./history";
+import { History } from "../pages/json/history";
 
 function Modal({ onClose, historyRecords, onClick }: { onClose: () => void, historyRecords: History[], onClick?: (record: History) => void }) {
 
