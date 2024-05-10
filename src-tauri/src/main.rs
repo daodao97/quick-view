@@ -56,6 +56,7 @@ fn is_json(input: &str) -> bool {
 
 use regex::Regex;
 
+#[tauri::command]
 fn remove_comments(input: &str) -> String {
     let mut result = input.to_string();
     
@@ -150,7 +151,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, remove_comments])
         .setup(|app| {
             let app_handle = app.handle().clone();
 
@@ -158,15 +159,16 @@ fn main() {
 
             let json_win = app.get_webview_window("json").unwrap();
 
+            json_win.show().unwrap();
+            json_win.set_focus().unwrap();
+
             spawn(move || {
                 let win = json_win.clone();
                 win.on_window_event(move |event| {
                     match event {
                         tauri::WindowEvent::CloseRequested { api, .. } => {
-                            // fixme win.hide().unwrap();
                             app_handle.get_webview_window("json").unwrap().hide().unwrap();
                             api.prevent_close();
-                            // win.close().unwrap();
                         }
                         _ => {}
                     }
@@ -186,18 +188,15 @@ fn main() {
                     println!("Is JSON: {}", is_json(&content));
                     if is_json(&content) {
                         println!("json content: {}", content);
-                        let res = win.emit("get_json", content).unwrap();
                         win.show().unwrap();
                         win.set_focus().unwrap();
-                        println!("Result: {:?}", res);
+                        win.emit("get_json", content).unwrap();
                     }
-                    // send_event_to_frontend(app_handle, "clipboard_changed", &content);
                 }).await
             });
 
 
             // clip
-
             let app_handle = app.handle().clone();
 
             clip_window(&app_handle);

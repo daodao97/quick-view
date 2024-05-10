@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { checkClipboardForJson } from "./funcs";
 import { getCurrent } from '@tauri-apps/api/window';
 import ReactJson from 'react-json-view'
 import { readText } from '@tauri-apps/plugin-clipboard-manager';
@@ -9,6 +8,7 @@ import Modal from "../../comps/Modal";
 import { addHistory, getHistory } from './history';
 import { History } from "./history";
 import { listen } from '@tauri-apps/api/event';
+import { isJsonText } from "./funcs";
 
 function App() {
   const [isJson, setIsJson] = useState(false);
@@ -20,7 +20,7 @@ function App() {
 
   const receivedJson = async (text : string) => {
     if (text === userCopy) return
-    const data = await checkClipboardForJson(text);
+    const data = await isJsonText(text);
     if (data) {
       setContent(data);
       setIsJson(true);
@@ -58,13 +58,23 @@ function App() {
     }
 
     listenError();
-  
+
+    async function  initClipText() {
+      const text = await readText();
+      console.log(`Got text init, payload: ${text}`);
+      if (text != content) {
+        receivedJson(text);
+      }
+    }
+
+    initClipText();
+
 
   }, []);
 
   const onHistoryClick = async (record: History) => {
     const text = record.content;
-    const data = await checkClipboardForJson(text);
+    const data = await isJsonText(text);
     if (data) {
       setContent(data);
       setIsJson(true);
