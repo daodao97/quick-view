@@ -12,6 +12,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<Json />} />
+                <Route path="/json" element={<Json />} />
                 <Route path="/clip" element={<Clip />} />
             </Routes>
         </Router>

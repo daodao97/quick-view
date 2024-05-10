@@ -85,7 +85,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <div className="flex-grow p-4 pb-20">
-        <ReactJson src={isJson ? (path ? { [path]: get(content, path, undefined) } : content) : {}} name={false} enableClipboard={enableClipboard} />
+        <ReactJson src={isJson ? (path ? { [path]: get(content, path, undefined) } : content) : {}} name={false} enableClipboard={enableClipboard} displayDataTypes={false} />
       </div>
       <div className="flex items-center justify-between bg-gray-200 p-2 shadow-inner fixed inset-x-0 bottom-0 h-15">
         <input type="text" className="flex-grow mr-2 p-2" placeholder="type a[0].b.c to filter" value={path} onChange={(e) => setPath(e.target.value)} />
