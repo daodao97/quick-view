@@ -1,11 +1,22 @@
 import { listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetch } from '@tauri-apps/plugin-http';
-import MonacoEditor from 'react-monaco-editor'
 import { readText } from '@tauri-apps/plugin-clipboard-manager';
+import historySvg from "../../assets/history.svg";
+import * as monaco from 'monaco-editor';
+import Modal from "../../comps/Modal";
 function App() {
 
     const [sql, setSql] = useState("");
+    const [editor, setEditor] = useState();
+    const container = useRef(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+        if (!isModalOpen) {
+        }
+    };
 
     const options = {
         selectOnLineNumbers: true,
@@ -40,23 +51,50 @@ function App() {
 
         console.log('format ', text);
         console.log('format ', response.status);
-        if (text != "") setSql(text);
+        if (text != "") {
+            setSql(text)
+        }
     }
 
-    // async function initClipText() {
-    //     const text = await readText();
-    //     console.log(`Got text init, payload: ${text}`);
-    //     if (text != sql) {
-    //         setSql(text);
-    //         await formatSQL(text);
-    //     }
-    // }
+    async function initClipText() {
+        const text = await readText();
+        console.log(`Got text init, payload: ${text}`);
+        if (text != sql) {
+            setSql(text);
+            await formatSQL(text);
+        }
+    }
 
-    // initClipText();
+    useEffect(() => {
+        let _editor;
+        if (container.current) {
+            _editor = monaco.editor.create(container.current, {
+                value: sql,
+                language: 'sql',
+                ...options
+            });
+        }
+
+        setEditor(_editor);
+
+        return () => {
+            if (_editor) {
+                _editor.dispose(); // 清理函数，用于销毁编辑器实例
+            }
+        };
+    }, []); // 确保初始化只执行一次
+
+    useEffect(() => {
+        if (container.current) {
+            const editor = monaco.editor.getModels()[0];
+            editor.setValue(sql);
+        }
+    }, [sql]); // 当 sql 变化时，更新编辑器内容
+
 
     useEffect(() => {
         async function listenGet() {
-            await listen<string>('get_sql', async (event) => {
+            return await listen<string>('get_sql', async (event) => {
                 console.log(`Got json, payload: ${event.payload}`);
                 setSql(event.payload);
                 await formatSQL(event.payload);
@@ -64,19 +102,26 @@ function App() {
         }
 
         listenGet();
-    })
+        initClipText();
+
+    }, []); // 依赖数组为空，确保只执行一次
+
 
 
     return (
-        <div>
-            <MonacoEditor
-                width='100%'
-                height='100%'
-                language='sql'
-                theme='vs-dark'
-                value={sql}
-                options={options}
-            />
+        <div className="min-h-screen flex flex-col justify-between">
+            <div className="flex-grow pt-1 pb-20">
+                <div id="container" ref={container} style={{ height: '100vh' }}></div>
+            </div>
+            <div className="flex items-center justify-between bg-gray-200 p-2 shadow-inner fixed inset-x-0 bottom-0 h-15">
+                <input type="text" className="flex-grow mr-2 p-2" placeholder="type keyword to filter" />
+                <button onClick={toggleModal} className="p-2">
+                    <img src={historySvg} className="h-5 w-5" alt="history" />
+                </button>
+            </div>
+            {isModalOpen && <Modal onClose={toggleModal}>
+                <div>xxxx</div>
+            </Modal>}
         </div>
     );
 }
