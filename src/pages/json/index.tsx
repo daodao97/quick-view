@@ -5,11 +5,11 @@ import { readText } from '@tauri-apps/plugin-clipboard-manager';
 import historySvg from "../../assets/history.svg";
 import { get } from "lodash";
 import Modal from "../../comps/Modal";
-import { addHistory, getHistory } from './history';
-import { History } from "./history";
+import { addHistory, getHistory } from '../../util/history';
+import { History } from "../../util/history";
 import { listen } from '@tauri-apps/api/event';
 import { isJsonText } from "./funcs";
-import HistoryTable from "./history_table";
+import HistoryTable from "../../comps/history_table";
 
 function App() {
   const [isJson, setIsJson] = useState(false);

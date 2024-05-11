@@ -1,4 +1,4 @@
-import { History } from "./history";
+import { History } from "../util/history";
 type HistoryTableProps = {
     historyRecords: History[];
     onClick?: (record: History) => void;

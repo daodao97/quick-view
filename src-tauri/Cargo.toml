@@ -1,5 +1,5 @@
 [package]
-name = "json-view"
+name = "quick-view"
 version = "0.0.1"
 description = "Json Quick View App"
 authors = ["you"]

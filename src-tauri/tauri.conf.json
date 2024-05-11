@@ -1,7 +1,7 @@
 {
-  "productName": "json-view",
+  "productName": "QuickView",
   "version": "0.0.1",
-  "identifier": "com.daodao.json-view",
+  "identifier": "com.daodao.quick-view",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",

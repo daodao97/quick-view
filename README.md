@@ -17,5 +17,5 @@ https://github.com/daodao97/json-view/assets/15009280/9329e101-8355-462b-b113-d7
 ## macOS 提示已损坏
 
 ```shell
-sudo xattr -r -d com.apple.quarantine /Applications/json-view.app
+sudo xattr -r -d com.apple.quarantine /Applications/QuickView.app
 ```

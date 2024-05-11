@@ -2,7 +2,7 @@ use anyhow::Result;
 use tauri::{
     menu::{Menu, MenuEvent, MenuItem, Submenu},
     tray::TrayIconBuilder,
-    AppHandle, Manager, Wry,
+    AppHandle, Wry,
 };
 
 fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
@@ -17,25 +17,9 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
         .map_err(|_| anyhow::anyhow!("Failed to create menu"))
 }
 
+
 fn handler(app: &AppHandle, event: MenuEvent) {
-    match event.id.as_ref() {
-        "json" => {
-            let panel = app.get_webview_window("json").unwrap();
-            let _ = panel.show();
-            let _ = panel.set_focus();
-        }
-        "sql" => {
-            let panel = app.get_webview_window("sql").unwrap();
-            let _ = panel.show();
-            let _ = panel.set_focus();
-        }
-        "exit" => {
-            let panel = app.get_webview_window("json").unwrap();
-            let _ = panel.hide();
-            app.exit(0)
-        }
-        _ => {}
-    }
+    crate::util::show_win(app, event.id.as_ref());
 }
 
 pub fn init(app: &AppHandle) -> Result<()> {

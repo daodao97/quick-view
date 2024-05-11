@@ -37,15 +37,14 @@ fn main() {
             let app_handle = app.handle().clone();
             crate::tray::init(&app_handle).unwrap();
             crate::win::init(&app_handle).unwrap();
-            crate::win::json_window(&app_handle).unwrap();
-
             Ok(())
         })
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
 
-    #[cfg(target_os = "macos")]
-    app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+    // 在程序坞中隐藏图标
+    // #[cfg(target_os = "macos")]
+    // app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 
     app.run(|_app_handle, _event| {});
 }

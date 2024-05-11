@@ -5,18 +5,29 @@ import { readText } from '@tauri-apps/plugin-clipboard-manager';
 import historySvg from "../../assets/history.svg";
 import * as monaco from 'monaco-editor';
 import Modal from "../../comps/Modal";
+import { History, getHistory, addHistory } from "../../util/history";
+import HistoryTable from "../../comps/history_table";
 function App() {
 
     const [sql, setSql] = useState("");
-    const [editor, setEditor] = useState();
     const container = useRef(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formating, setFormating] = useState(false);
+    const [mining, setMining] = useState(false);
+    const [history, setHistory] = useState<History[]>([]);
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
         if (!isModalOpen) {
+            loadHistory();
         }
     };
+
+    async function loadHistory() {
+        const records = await getHistory('sql');
+        console.log(records)
+        records && setHistory(records);
+    }
 
     const options = {
         selectOnLineNumbers: true,
@@ -26,6 +37,7 @@ function App() {
     }
 
     const formatSQL = async (content: string) => {
+        setFormating(true);
         const response = await fetch("https://codebeautify.org/Ql/formateQL", {
             "headers": {
                 "accept": "*/*",
@@ -54,6 +66,36 @@ function App() {
         if (text != "") {
             setSql(text)
         }
+
+        setFormating(false);
+    }
+
+    const miniSQL = async (content: string) => {
+        setMining(true);
+        const response = await fetch("https://codebeautify.org/Ql/minifyQL", {
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+                "sec-ch-ua": "\"Chromium\";v=\"124\", \"Google Chrome\";v=\"124\", \"Not-A.Brand\";v=\"99\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"macOS\""
+            },
+            "referrer": "https://codebeautify.org/sqlformatter",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": "data=" + encodeURIComponent(content),
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "omit"
+        });
+
+        const text = await response.text();
+
+        console.log('format ', text);
+        console.log('format ', response.status);
+        if (text != "") {
+            setSql(text)
+        }
+
+        setMining(false);
     }
 
     async function initClipText() {
@@ -65,17 +107,22 @@ function App() {
         }
     }
 
+    const onHistoryClick = async (record: History) => {
+        const text = record.content;
+        setSql(text);
+        setIsModalOpen(false);
+    };
+
     useEffect(() => {
-        let _editor;
+        let _editor: monaco.editor.IStandaloneCodeEditor;
         if (container.current) {
             _editor = monaco.editor.create(container.current, {
-                value: sql,
+                value: sql + "\n".repeat(100),
                 language: 'sql',
                 ...options
             });
         }
 
-        setEditor(_editor);
 
         return () => {
             if (_editor) {
@@ -87,7 +134,7 @@ function App() {
     useEffect(() => {
         if (container.current) {
             const editor = monaco.editor.getModels()[0];
-            editor.setValue(sql);
+            editor.setValue(sql + "\n".repeat(100));
         }
     }, [sql]); // 当 sql 变化时，更新编辑器内容
 
@@ -97,6 +144,8 @@ function App() {
             return await listen<string>('get_sql', async (event) => {
                 console.log(`Got json, payload: ${event.payload}`);
                 setSql(event.payload);
+                addHistory(event.payload, 'sql');
+                setIsModalOpen(false);
                 await formatSQL(event.payload);
             });
         }
@@ -106,21 +155,52 @@ function App() {
 
     }, []); // 依赖数组为空，确保只执行一次
 
-
-
     return (
         <div className="min-h-screen flex flex-col justify-between">
             <div className="flex-grow pt-1 pb-20">
                 <div id="container" ref={container} style={{ height: '100vh' }}></div>
             </div>
             <div className="flex items-center justify-between bg-gray-200 p-2 shadow-inner fixed inset-x-0 bottom-0 h-15">
-                <input type="text" className="flex-grow mr-2 p-2" placeholder="type keyword to filter" />
+                <div className="flex gap-3 justify-start">
+
+                    <button disabled={formating}
+                        className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm py-2 px-4 rounded-lg bg-white text-blue-gray-900 shadow-md shadow-blue-gray-500/10 hover:shadow-lg hover:shadow-blue-gray-500/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none flex items-center gap-3"
+                        type="button">
+                        {
+                            formating
+                                ? <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                : undefined
+                        }
+
+                        Format SQL
+                    </button>
+                    <button
+                        disabled={mining}
+                        onClick={async () => { await miniSQL(sql) }}
+                        className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm py-2 px-4 rounded-lg bg-white text-blue-gray-900 shadow-md shadow-blue-gray-500/10 hover:shadow-lg hover:shadow-blue-gray-500/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none flex items-center gap-3"
+                        type="button">
+                        {
+                            mining
+                                ? <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                : undefined
+                        }
+                        Mini SQL
+                    </button>
+                </div>
                 <button onClick={toggleModal} className="p-2">
                     <img src={historySvg} className="h-5 w-5" alt="history" />
                 </button>
             </div>
             {isModalOpen && <Modal onClose={toggleModal}>
-                <div>xxxx</div>
+                {isModalOpen && <Modal onClose={toggleModal}>
+                    <HistoryTable historyRecords={history} onClick={onHistoryClick}></HistoryTable>
+                </Modal>}
             </Modal>}
         </div>
     );

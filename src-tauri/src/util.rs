@@ -8,8 +8,31 @@ pub fn gen_window(app: &AppHandle, name: &str) -> Result<tauri::WebviewWindow, t
         .build()
 }
 
+pub fn get_window(app_handle: &AppHandle, name: &str) -> Option<WebviewWindow> {
+    app_handle.get_webview_window(name)
+}
 
+pub fn gen_or_get_window(app_handle: &AppHandle, name: &str) -> Option<WebviewWindow> {
+    if let Some(window) = app_handle.get_webview_window(name) {
+        Some(window)  // 如果窗口已存在，则直接返回
+    } else {
+        // 尝试创建一个新的窗口，如果出现错误，则返回 None
+        match gen_window(app_handle, name) {
+            Ok(window) => Some(window),  // 如果创建成功，返回新的窗口
+            Err(_) => None,  // 如果创建失败，返回 None
+        }
+    }
+}
+
+pub fn show_win(app: &AppHandle, name: &str) {
+    let panel = crate::util::gen_or_get_window(&app, name).unwrap();
+    panel.show().unwrap();
+    panel.set_focus().unwrap();
+}
+
+use tauri::Manager;
 use tauri::Runtime;
+use tauri::WebviewWindow;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use std::{sync::{Arc, Mutex}, time::Duration};
 use tokio::time::sleep;
@@ -56,7 +79,7 @@ pub fn is_json(input: &str) -> bool {
 
 
 pub fn is_sql(query: &str) -> bool {
-    let re = Regex::new(r"(?i)\b(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|WITH)\b").unwrap();
+    let re = Regex::new(r"^(?i)(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|WITH)\b").unwrap();
     re.is_match(query)
 }
 

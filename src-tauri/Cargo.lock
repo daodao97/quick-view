@@ -1880,24 +1880,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "json-view"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "regex",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-clipboard-manager",
- "tauri-plugin-http",
- "tauri-plugin-shell",
- "tauri-plugin-sql",
- "tauri-plugin-store",
- "tokio",
-]
-
-[[package]]
 name = "keyboard-types"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2826,6 +2808,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f6d64c71eb498fe9eae14ce4ec935c555749aef511cca85b5568910d6e48001"
 dependencies = [
  "bytemuck",
+]
+
+[[package]]
+name = "quick-view"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "regex",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-clipboard-manager",
+ "tauri-plugin-http",
+ "tauri-plugin-shell",
+ "tauri-plugin-sql",
+ "tauri-plugin-store",
+ "tokio",
 ]
 
 [[package]]
