@@ -13,7 +13,7 @@ pub fn init(app_handle: &AppHandle) -> Result<()> {
         let sql_win = crate::util::gen_or_get_window(&handle, "sql").unwrap();
         let _handle = handle.clone();
         crate::util::on_clipboard_change(handle, move |content| {
-            let content = content.trim(); 
+            let content = content.trim();
             if crate::util::is_json(&content) {
                 println!("json content: {}", content);
                 crate::util::show_win(&_handle, "json");

@@ -19,7 +19,14 @@ fn menu(handle: &AppHandle) -> Result<Menu<Wry>> {
 
 
 fn handler(app: &AppHandle, event: MenuEvent) {
-    crate::util::show_win(app, event.id.as_ref());
+    match event.id.as_ref() {
+        "json" => crate::util::show_win(app, "json"),
+        "sql" => crate::util::show_win(app, "sql"),
+        "exit" => {
+            app.exit(0)
+        }
+        _ => {}
+    }
 }
 
 pub fn init(app: &AppHandle) -> Result<()> {
