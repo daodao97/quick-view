@@ -73,13 +73,22 @@ pub async fn on_clipboard_change<R: Runtime, F>(app: tauri::AppHandle<R>, callba
 }
 
 pub fn is_json(input: &str) -> bool {
+    let input = input.trim().to_string();
     let input = remove_comments(&input);
+    // if not start with { or [ then not json
+    if !input.starts_with('{') && !input.starts_with('[') {
+        return false;
+    }
+    // if not end with } or ] then not json
+    if !input.ends_with('}') && !input.ends_with(']') {
+        return false;
+    }
     serde_json::from_str::<serde_json::Value>(&input).is_ok()
 }
 
 
 pub fn is_sql(query: &str) -> bool {
-    let re = Regex::new(r"^(?i)(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|WITH)\b").unwrap();
+    let re = Regex::new(r"^(?i)(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|WITH|SHOW)\b").unwrap();
     re.is_match(query)
 }
 

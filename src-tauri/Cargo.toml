@@ -1,6 +1,6 @@
 [package]
 name = "quick-view"
-version = "0.0.1"
+version = "0.0.2"
 description = "Json Quick View App"
 authors = ["you"]
 edition = "2021"
@@ -12,7 +12,7 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 tauri = { version = "2.0.0-beta", features = [
-    'tray-icon'
+    'tray-icon',
 ] }
 tauri-plugin-shell = "2.0.0-beta"
 serde = { version = "1", features = ["derive"] }
