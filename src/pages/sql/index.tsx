@@ -7,7 +7,7 @@ import { History, getHistory, addHistory } from "../../util/history";
 import HistoryTable from "../../comps/history_table";
 // @ts-ignore
 import sqlFormatter from 'sql-formatter-plus'
-import { replaceSpaces } from './func'
+import { replaceSpaces, decodeUnicode } from './func'
 
 import useMonacoEditor from "../../comps/monaco";
 
@@ -44,6 +44,7 @@ function App() {
     const formatSQL = (content: string) => {
         setFormating(true);
 
+        content = decodeUnicode(content);
         try {
             const text = sqlFormatter.format(content);
             console.log('format', text)

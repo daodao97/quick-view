@@ -33,3 +33,8 @@ export function replaceSpaces(input: string) {
 
     return result.join("");
 }
+
+export function decodeUnicode(str: string) {
+    // 使用 JSON.parse 解析类似 JSON 字符串的结构
+    return JSON.parse('"' + str + '"');
+  }
